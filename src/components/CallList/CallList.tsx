@@ -1,24 +1,24 @@
-import React, { useEffect } from "react";
-import { useSelector, useDispatch } from "react-redux";
-import { RootState, AppDispatch } from "../../redux/store";
-import { fetchCalls } from "../../redux/callsSlice";
-import CallItem from "../CallItem/CallItem";
-import styles from "./CallList.module.scss";
+import React from 'react';
+import { useDispatch } from 'react-redux';
+import { AppDispatch } from '../../store';
+import useCalls from '../../store/hooks/useCalls';
+import styles from './CallList.module.scss';
+import CallItem from '../CallItem/CallItem';
 
 const CallList: React.FC = () => {
   const dispatch = useDispatch<AppDispatch>();
-  const { calls, status } = useSelector((state: RootState) => state.calls);
-
-  useEffect(() => {
-    dispatch(fetchCalls());
-  }, [dispatch]);
+  const { calls, isLoadingCalls } = useCalls();
 
   return (
     <div className={styles.callList}>
-      {status === "loading" ? (
+      {isLoadingCalls ? (
         <p>Загрузка...</p>
       ) : (
-        calls.results.map((call) => <CallItem key={Math.random()} call={call} />)
+        <div className={styles.callItems}>
+          {calls.map((call) => (
+            <CallItem key={call.id} call={call} />
+          ))}
+        </div>
       )}
     </div>
   );

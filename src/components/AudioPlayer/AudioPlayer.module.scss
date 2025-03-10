@@ -1,0 +1,58 @@
+.audioPlayer {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: #f2f5fa;
+  border-radius: 30px;
+  padding: 10px 15px;
+}
+
+.time {
+  font-size: 16px;
+  font-weight: bold;
+  color: #111;
+}
+
+.playButton {
+  background: white;
+  border: none;
+  border-radius: 50%;
+  width: 30px;
+  height: 30px;
+  font-size: 16px;
+  cursor: pointer;
+  color: blue;
+}
+
+.progressBar {
+  flex: 1;
+  height: 6px;
+  background: #d0d5e2;
+  border-radius: 3px;
+  position: relative;
+}
+
+.progress {
+  height: 6px;
+  background: #8395ff;
+  border-radius: 3px;
+  position: absolute;
+  left: 0;
+  top: 0;
+}
+
+.downloadButton {
+  font-size: 16px;
+  color: #8395ff;
+  background: none;
+  border: none;
+  cursor: pointer;
+}
+
+.closeButton {
+  font-size: 16px;
+  color: #005eff;
+  background: none;
+  border: none;
+  cursor: pointer;
+}

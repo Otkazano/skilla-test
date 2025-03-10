@@ -1,15 +1,14 @@
-import React from "react";
-import { Provider } from "react-redux";
-import { store } from "./redux/store";
-import CallList from "./components/CallList/CallList";
+import React from 'react';
+import { Provider } from 'react-redux';
+import store from './store/index';
+import Tabel from './components/Tabel/Tabel';
 
 const App: React.FC = () => {
   return (
     <Provider store={store}>
-      <div>
-      <h1>Список звонков 22</h1>
-      <CallList />
-    </div>
+      <div className="wrapper">
+        <Tabel />
+      </div>
     </Provider>
   );
 };
