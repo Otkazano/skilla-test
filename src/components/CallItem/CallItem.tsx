@@ -1,54 +1,93 @@
 import React, { useState } from 'react';
 import { Call } from '../../store/reducers/calls';
 import styles from './CallItem.module.scss';
-import AudioPlayer from '../AudioPlayer/AudioPlayer';
+import failedCallIcon from '../../assets/icons/calls/failed-call.svg';
+import incomingCallIcon from '../../assets/icons/calls/incoming-call.svg';
+import missedCallIcon from '../../assets/icons/calls/missed-call.svg';
+import outgoingCallIcon from '../../assets/icons/calls/outgoing-call.svg';
+import noAvatarIcon from '../../assets/icons/no-avatar-icon.svg';
+// import AudioPlayer from '../AudioPlayer/AudioPlayer';
 
 interface CallItemProps {
   call: Call;
 }
 
-const getRandomRating = () => Math.floor(Math.random() * 5) + 1;
+enum Ratings {
+  Bad = 'Плохо',
+  Good = 'Хорошо',
+  Excellent = 'Отлично',
+  ScriptNotUsed = 'Скрипт не использован',
+}
+
+const RATING_CLASS_MAP: Record<Ratings, string> = {
+  [Ratings.Bad]: styles.bad,
+  [Ratings.Good]: styles.good,
+  [Ratings.Excellent]: styles.excellent,
+  [Ratings.ScriptNotUsed]: styles.notUsed,
+};
+
+const getRandomRating = (): Ratings => {
+  const values = Object.values(Ratings);
+  return values[Math.floor(Math.random() * values.length)] as Ratings;
+};
+
+const getCallIcon = (status: string, in_out: number | null) => {
+  switch (in_out) {
+    case 0:
+      return status === 'Дозвонился' ? outgoingCallIcon : failedCallIcon;
+    case 1:
+      return status === 'Дозвонился' ? incomingCallIcon : missedCallIcon;
+    default:
+      return failedCallIcon;
+  }
+};
 
 const CallItem: React.FC<CallItemProps> = ({ call }) => {
   const [rating] = useState(getRandomRating());
 
   return (
     <div className={styles.callItem}>
-      <div className={styles.callHeader}>
-        <span className={styles.callDirection}>
-          {call.in_out === 0 ? '📥 Входящий' : '📤 Исходящий'}
-        </span>
-        <span className={styles.callStatus}>
-          {call.status === 'Дозвонился' ? '✅' : '❌'}
-        </span>
+      <img
+        src={getCallIcon(call.status, call.in_out)}
+        alt="направление звонка"
+        className={styles.callIcon}
+      />
+      <div className={styles.callTime}>
+        {new Date(call.date).toLocaleTimeString([], {
+          hour: '2-digit',
+          minute: '2-digit',
+        })}
+      </div>
+      <div className={styles.callAvatar}>
+        <img
+          src={call.person_avatar || noAvatarIcon}
+          alt="avatar"
+          className={styles.avatar}
+        />
+      </div>
+      <div className={styles.callNumber}>{call.from_number}</div>
+      <div className={styles.callSource}>{call.source || ''}</div>
+
+      <div className={`${styles.callRating} ${RATING_CLASS_MAP[rating]}`}>
+        {rating}
       </div>
 
-      <div className={styles.callDetails}>
-        <div>
-          <strong>С:</strong> {call.from_number}{' '}
-          {call.from_extension && `(${call.from_extension})`}
+      {call.status === 'Дозвонился' ? (
+        <div className={styles.callDuration}>
+          {new Date(call.time * 1000).toISOString().substr(14, 5)}
         </div>
-        <div>
-          <strong>На:</strong> {call.to_number}{' '}
-          {call.to_extension && `(${call.to_extension})`}
-        </div>
-        <div>
-          <strong>Длительность:</strong> {call.time} сек
-        </div>
-        <div>
-          <strong>Оценка:</strong> {'⭐'.repeat(rating)}
-        </div>
-      </div>
-
-      {/* {call.record && (
-        <AudioPlayer record={call.record} partnershipId={call.partnership_id} />
-      )} */}
-
-      {call.abuse && (
-        <div className={styles.callAbuse}>
-          <strong>Жалоба:</strong> {call.abuse.message}
-        </div>
+      ) : (
+        <div></div>
       )}
+
+      <div className={styles.callAudio}>
+        {/* {call.record && (
+          <AudioPlayer
+            record={call.record}
+            partnershipId={call.partnership_id}
+          />
+        )} */}
+      </div>
     </div>
   );
 };

@@ -1,0 +1,31 @@
+@import '../../styles/colors.scss';
+
+.tableHead {
+  display: grid;
+  grid-template-columns: 54px 88px 129px 325px 214px 461px 110px;
+  padding: 0 40px 20px 40px;
+  color: $text-secondary;
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 148%;
+}
+
+.sortButton {
+  display: flex;
+  gap: 6px;
+  cursor: pointer;
+
+  &:hover {
+    color: #005ff8;
+  }
+}
+
+.sortIcon {
+  &.asc {
+    transform: rotate(0);
+  }
+
+  &.desc {
+    transform: rotate(180deg);
+  }
+}

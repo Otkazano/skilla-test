@@ -1,0 +1,18 @@
+.text {
+  color: #122945;
+  font-size: 15px;
+  font-weight: 400;
+  line-height: 145%;
+  letter-spacing: 0.15px;
+  margin: 39px 0 16px 40px;
+  position: relative;
+}
+
+.count {
+  position: absolute;
+  top: 0;
+  color: var(--text-header, #899cb1);
+  font-size: 12px;
+  font-weight: 400;
+  line-height: 100%;
+}

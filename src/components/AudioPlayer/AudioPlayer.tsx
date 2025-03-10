@@ -5,17 +5,13 @@ import { useAudio } from '../../services/api/useAudio';
 interface AudioPlayerProps {
   record: string;
   partnershipId: string;
-  onClose?: () => void;
 }
 
-const AudioPlayer: React.FC<AudioPlayerProps> = ({
-  record,
-  partnershipId,
-  onClose,
-}) => {
+const AudioPlayer: React.FC<AudioPlayerProps> = ({ record, partnershipId }) => {
   const [audioUrl, setAudioUrl] = useState<string | null>(null);
   const { audioUrl: fetchedUrl, fetchAudio } = useAudio(record, partnershipId);
   const audioRef = useRef<HTMLAudioElement | null>(null);
+  const [isPlaying, setIsPlaying] = useState(false);
 
   useEffect(() => {
     if (!fetchedUrl) {
@@ -25,17 +21,25 @@ const AudioPlayer: React.FC<AudioPlayerProps> = ({
     }
   }, [fetchedUrl, fetchAudio]);
 
+  const togglePlay = () => {
+    if (!audioRef.current) return;
+    if (isPlaying) {
+      audioRef.current.pause();
+    } else {
+      audioRef.current.play();
+    }
+    setIsPlaying(!isPlaying);
+  };
+
   return (
     <div className={styles.audioPlayer}>
-      {audioUrl ? (
-        <audio ref={audioRef} controls className={styles.audio}>
-          <source src={audioUrl} type="audio/mpeg" />
-          Your browser does not support the audio element.
-        </audio>
-      ) : (
-        <p>Loading...</p>
-      )}
-
+      <span className={styles.time}>12:08</span>
+      <button className={styles.playButton} onClick={togglePlay}>
+        {isPlaying ? '❚❚' : '▶️'}
+      </button>
+      <div className={styles.progressBar}>
+        <div className={styles.progress}></div>
+      </div>
       <button
         className={styles.downloadButton}
         onClick={() => {
@@ -48,14 +52,9 @@ const AudioPlayer: React.FC<AudioPlayerProps> = ({
           document.body.removeChild(a);
         }}
       >
-        ⬇️ Download
+        ⬇️
       </button>
-
-      {onClose && (
-        <button className={styles.closeButton} onClick={onClose}>
-          ❌ Close
-        </button>
-      )}
+      <audio ref={audioRef} src={audioUrl || ''} />
     </div>
   );
 };

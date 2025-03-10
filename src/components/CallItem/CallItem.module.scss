@@ -1,8 +1,77 @@
+@import '../../styles/colors.scss';
+
 .callItem {
-  display: flex;
-  justify-content: space-between;
-  background: white;
-  padding: 10px;
-  border-radius: 5px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  display: grid;
+  grid-template-columns: 54px 88px 129px 325px 214px 461px 110px;
+  border-top: 1px solid $callItem-divider;
+  height: 65px;
+  padding: 16px 40px 16px 40px;
+  font-size: 15px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: 140%;
+  cursor: pointer;
+  align-items: center;
+
+  &:hover {
+    background: rgba(212, 223, 243, 0.17);
+  }
+}
+
+.callIcon {
+  width: 12px;
+  height: 12px;
+  margin-left: 6px;
+}
+.callAvatar {
+  .avatar {
+    display: flex;
+    height: 32px;
+    justify-content: center;
+    align-items: center;
+    flex-shrink: 0;
+  }
+}
+
+.callRating {
+  display: inline-flex;
+  padding: 6px 8px;
+  align-items: flex-start;
+  gap: 10px;
+  border-radius: 4px;
+  width: fit-content;
+  font-size: 14px;
+  line-height: 100%; /* 14px */
+}
+
+.bad {
+  border: 1px solid var(--UI-red, #ea1a4f);
+  background: var(--UI-light-red, #fee9ef);
+  color: var(--UI-red, #ea1a4f);
+}
+
+.good {
+  border: 1px solid var(--UI-Icon, #adbfdf);
+  background: var(--UI-secondary, #d8e4fb);
+  color: var(--text, #122945);
+}
+
+.excellent {
+  border: 1px solid var(--UI-green, #28a879);
+  background: var(--UI-light-green, #dbf8ef);
+  color: var(--text-green, #00a775);
+}
+
+.notUsed {
+  color: var(--UI-red, #ea1a4f);
+  padding: 0;
+}
+
+.callDuration {
+  text-align: end;
+  padding-right: 16px;
+}
+
+.callSource {
+  color: $text-secondary;
 }

@@ -5,10 +5,11 @@
   background: #f2f5fa;
   border-radius: 30px;
   padding: 10px 15px;
+  border: 2px solid #4a90e2;
 }
 
 .time {
-  font-size: 16px;
+  font-size: 14px;
   font-weight: bold;
   color: #111;
 }
@@ -44,14 +45,6 @@
 .downloadButton {
   font-size: 16px;
   color: #8395ff;
-  background: none;
-  border: none;
-  cursor: pointer;
-}
-
-.closeButton {
-  font-size: 16px;
-  color: #005eff;
   background: none;
   border: none;
   cursor: pointer;

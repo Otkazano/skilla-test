@@ -4,7 +4,7 @@ interface CallFiltersState {
   date_start: string;
   date_end: string;
   in_out?: number | undefined;
-  sort_by: 'date' | 'duration';
+  sort_by: undefined | 'date' | 'duration';
   order: 'ASC' | 'DESC';
 }
 
@@ -13,7 +13,7 @@ const initialState: CallFiltersState = {
     .toISOString()
     .split('T')[0],
   date_end: new Date().toISOString().split('T')[0],
-  sort_by: 'date',
+  sort_by: undefined,
   order: 'DESC',
 };
 

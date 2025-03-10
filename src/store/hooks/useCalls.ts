@@ -4,6 +4,64 @@ import { setCalls, Call } from '../reducers/calls';
 import apiClient from '../../services/api/api';
 import { RootState } from '..';
 
+const formatDate = (date: Date) => {
+  const yesterday = new Date();
+  yesterday.setDate(yesterday.getDate() - 1);
+
+  if (date.toDateString() === yesterday.toDateString()) {
+    return 'Вчера';
+  } else {
+    return date.toLocaleDateString('ru-RU', { day: 'numeric', month: 'long' });
+  }
+};
+
+const groupCallsByDate = (calls: Call[], filters: Record<string, any>) => {
+  const grouped: (Call | { type: 'header'; date: string; count: number })[] =
+    [];
+  const callCounts: Record<string, number> = {};
+  const today = new Date().toDateString();
+  let lastDate = '';
+
+  const isSortByActive =
+    filters.sort_by !== undefined &&
+    filters.sort_by !== null &&
+    filters.sort_by !== '';
+
+  calls.forEach((call) => {
+    const callDate = new Date(call.date).toDateString();
+    callCounts[callDate] = (callCounts[callDate] || 0) + 1;
+  });
+
+  calls.forEach((call) => {
+    const callDate = new Date(call.date);
+    const callDateString = callDate.toDateString();
+    const formattedDate = formatDate(callDate);
+
+    // Добавляем "Сегодня", если активен sort_by
+    if (isSortByActive && callDateString === today && lastDate !== 'Сегодня') {
+      grouped.push({
+        type: 'header',
+        date: 'Сегодня',
+        count: callCounts[callDateString],
+      });
+      lastDate = 'Сегодня';
+    }
+
+    if (callDateString !== today && formattedDate !== lastDate) {
+      grouped.push({
+        type: 'header',
+        date: formattedDate,
+        count: callCounts[callDateString],
+      });
+      lastDate = formattedDate;
+    }
+
+    grouped.push(call);
+  });
+
+  return grouped;
+};
+
 const useCalls = () => {
   const dispatch = useAppDispatch();
   const calls = useAppSelector((state: RootState) => state.calls);
@@ -15,6 +73,7 @@ const useCalls = () => {
   React.useEffect(() => {
     isMounted.current = true;
     setIsLoading(true);
+    setError('');
 
     const getCalls = async () => {
       try {
@@ -41,11 +100,16 @@ const useCalls = () => {
         })) as { results: Call[] };
 
         if (isMounted.current) {
-          dispatch(setCalls(response.results));
+          const groupedCalls = groupCallsByDate(response.results, filters);
+          dispatch(setCalls(groupedCalls));
+          setError('');
         }
       } catch (error) {
         console.error('Ошибка при загрузке звонков:', error);
-        setError('Ошибка при загрузке звонков');
+        if (isMounted.current) {
+          dispatch(setCalls([]));
+          setError('Ошибка при загрузке звонков');
+        }
       } finally {
         if (isMounted.current) {
           setIsLoading(false);
@@ -63,7 +127,7 @@ const useCalls = () => {
   return {
     calls: calls.items,
     isLoadingCalls: isLoading,
-    error: error,
+    error,
   };
 };
 

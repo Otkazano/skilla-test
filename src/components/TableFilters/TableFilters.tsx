@@ -31,6 +31,7 @@ const initialFilters = {
     .split('T')[0],
   date_end: new Date().toISOString().split('T')[0],
   in_out: undefined,
+  sort_by: undefined,
 };
 
 const TableFilters: React.FC = () => {
@@ -123,7 +124,8 @@ const TableFilters: React.FC = () => {
   const filtersAreDefault =
     filters.date_start === initialFilters.date_start &&
     filters.date_end === initialFilters.date_end &&
-    filters.in_out === initialFilters.in_out;
+    filters.in_out === initialFilters.in_out &&
+    filters.sort_by === initialFilters.sort_by;
 
   const CustomInput = forwardRef<
     HTMLButtonElement,
@@ -146,7 +148,7 @@ const TableFilters: React.FC = () => {
           <span>
             {filters.in_out === undefined
               ? inOutCallsTypes.undefined
-              : filters.in_out === 0
+              : filters.in_out === 1
                 ? inOutCallsTypes.inCall
                 : inOutCallsTypes.outCall}
           </span>
@@ -165,14 +167,14 @@ const TableFilters: React.FC = () => {
               {inOutCallsTypes.undefined}
             </div>
             <div
-              onClick={() => dispatch(setFilters({ in_out: 0 }))}
-              className={filters.in_out === 0 ? styles.dropdownActive : ''}
+              onClick={() => dispatch(setFilters({ in_out: 1 }))}
+              className={filters.in_out === 1 ? styles.dropdownActive : ''}
             >
               {inOutCallsTypes.inCall}
             </div>
             <div
-              onClick={() => dispatch(setFilters({ in_out: 1 }))}
-              className={filters.in_out === 1 ? styles.dropdownActive : ''}
+              onClick={() => dispatch(setFilters({ in_out: 0 }))}
+              className={filters.in_out === 0 ? styles.dropdownActive : ''}
             >
               {inOutCallsTypes.outCall}
             </div>
