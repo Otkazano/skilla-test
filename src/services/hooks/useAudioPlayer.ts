@@ -27,7 +27,7 @@ export const useAudioPlayer = () => {
       audio.removeEventListener('timeupdate', updateProgress);
       audio.removeEventListener('loadedmetadata', updateDuration);
     };
-  }, []);
+  }, [audioRef.current]);
 
   const togglePlay = useCallback(() => {
     if (audioRef.current) {

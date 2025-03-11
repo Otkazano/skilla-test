@@ -72,7 +72,13 @@ const AudioPlayer: React.FC<AudioPlayerProps> = ({
         <audio ref={audioRef} src={audioUrl} />
       )}
 
-      <button onClick={onClose} className={styles.closeButton}>
+      <button
+        onClick={() => {
+          onClose();
+          isPlaying && togglePlay();
+        }}
+        className={styles.closeButton}
+      >
         <CloseButton />
       </button>
     </div>
