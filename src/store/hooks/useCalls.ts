@@ -1,76 +1,19 @@
-import React from 'react';
-import { useAppDispatch, useAppSelector } from '../hooks/index';
+import { useEffect, useRef, useState } from 'react';
+import { useAppDispatch, useAppSelector } from '../hooks';
 import { setCalls, Call } from '../reducers/calls';
 import apiClient from '../../services/api/api';
 import { RootState } from '..';
-
-const formatDate = (date: Date) => {
-  const yesterday = new Date();
-  yesterday.setDate(yesterday.getDate() - 1);
-
-  if (date.toDateString() === yesterday.toDateString()) {
-    return 'Вчера';
-  } else {
-    return date.toLocaleDateString('ru-RU', { day: 'numeric', month: 'long' });
-  }
-};
-
-const groupCallsByDate = (calls: Call[], filters: Record<string, any>) => {
-  const grouped: (Call | { type: 'header'; date: string; count: number })[] =
-    [];
-  const callCounts: Record<string, number> = {};
-  const today = new Date().toDateString();
-  let lastDate = '';
-
-  const isSortByActive =
-    filters.sort_by !== undefined &&
-    filters.sort_by !== null &&
-    filters.sort_by !== '';
-
-  calls.forEach((call) => {
-    const callDate = new Date(call.date).toDateString();
-    callCounts[callDate] = (callCounts[callDate] || 0) + 1;
-  });
-
-  calls.forEach((call) => {
-    const callDate = new Date(call.date);
-    const callDateString = callDate.toDateString();
-    const formattedDate = formatDate(callDate);
-
-    // Добавляем "Сегодня", если активен sort_by
-    if (isSortByActive && callDateString === today && lastDate !== 'Сегодня') {
-      grouped.push({
-        type: 'header',
-        date: 'Сегодня',
-        count: callCounts[callDateString],
-      });
-      lastDate = 'Сегодня';
-    }
-
-    if (callDateString !== today && formattedDate !== lastDate) {
-      grouped.push({
-        type: 'header',
-        date: formattedDate,
-        count: callCounts[callDateString],
-      });
-      lastDate = formattedDate;
-    }
-
-    grouped.push(call);
-  });
-
-  return grouped;
-};
+import { groupCallsByDate } from '../../services/utils/callUtils';
 
 const useCalls = () => {
   const dispatch = useAppDispatch();
-  const calls = useAppSelector((state: RootState) => state.calls);
+  const calls = useAppSelector((state: RootState) => state.calls.items);
   const filters = useAppSelector((state: RootState) => state.callFilters);
-  const [isLoading, setIsLoading] = React.useState(true);
-  const [error, setError] = React.useState('');
-  const isMounted = React.useRef(true);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState('');
+  const isMounted = useRef(true);
 
-  React.useEffect(() => {
+  useEffect(() => {
     isMounted.current = true;
     setIsLoading(true);
     setError('');
@@ -78,7 +21,7 @@ const useCalls = () => {
     const getCalls = async () => {
       try {
         const queryString = new URLSearchParams(
-          Object.entries(filters).reduce(
+          Object.entries(filters).reduce<Record<string, string>>(
             (acc, [key, value]) => {
               if (value !== undefined) {
                 acc[key] = Array.isArray(value)
@@ -87,25 +30,24 @@ const useCalls = () => {
               }
               return acc;
             },
-            {} as Record<string, string>,
+            {},
           ),
         ).toString();
 
-        const response = (await apiClient.request({
+        const response = await apiClient.request<{ results: Call[] }>({
           url: `https://api.skilla.ru/mango/getList?${queryString}`,
           method: 'POST',
           headers: {
             Authorization: `Bearer ${process.env.REACT_APP_API_TOKEN}`,
           },
-        })) as { results: Call[] };
+        });
 
         if (isMounted.current) {
-          const groupedCalls = groupCallsByDate(response.results, filters);
-          dispatch(setCalls(groupedCalls));
+          dispatch(setCalls(groupCallsByDate(response.results, filters)));
           setError('');
         }
-      } catch (error) {
-        console.error('Ошибка при загрузке звонков:', error);
+      } catch (err) {
+        console.error('Ошибка при загрузке звонков:', err);
         if (isMounted.current) {
           dispatch(setCalls([]));
           setError('Ошибка при загрузке звонков');
@@ -124,11 +66,7 @@ const useCalls = () => {
     };
   }, [filters, dispatch]);
 
-  return {
-    calls: calls.items,
-    isLoadingCalls: isLoading,
-    error,
-  };
+  return { calls, isLoadingCalls: isLoading, error };
 };
 
 export default useCalls;

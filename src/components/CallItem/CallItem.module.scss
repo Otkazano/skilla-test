@@ -12,6 +12,7 @@
   line-height: 140%;
   cursor: pointer;
   align-items: center;
+  position: relative;
 
   &:hover {
     background: rgba(212, 223, 243, 0.17);
@@ -74,4 +75,24 @@
 
 .callSource {
   color: $text-secondary;
+}
+
+.callAudio {
+  display: none;
+}
+
+.callItem:hover .callAudio {
+  display: block;
+}
+
+.callItem:hover .callDuration {
+  display: none;
+}
+
+.callAudioShown {
+  display: block;
+}
+
+.callDurationHidden {
+  display: none;
 }

@@ -1,18 +1,17 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
+import { DEFAULT_DATE_END, DEFAULT_DATE_START } from '../../services/constants';
 
 interface CallFiltersState {
   date_start: string;
   date_end: string;
-  in_out?: number | undefined;
-  sort_by: undefined | 'date' | 'duration';
+  in_out?: number;
+  sort_by?: 'date' | 'duration';
   order: 'ASC' | 'DESC';
 }
 
 const initialState: CallFiltersState = {
-  date_start: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000)
-    .toISOString()
-    .split('T')[0],
-  date_end: new Date().toISOString().split('T')[0],
+  date_start: DEFAULT_DATE_START,
+  date_end: DEFAULT_DATE_END,
   sort_by: undefined,
   order: 'DESC',
 };
@@ -22,7 +21,7 @@ const callFiltersSlice = createSlice({
   initialState,
   reducers: {
     setFilters: (state, action: PayloadAction<Partial<CallFiltersState>>) => {
-      return { ...state, ...action.payload };
+      Object.assign(state, action.payload);
     },
   },
 });

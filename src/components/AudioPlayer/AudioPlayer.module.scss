@@ -1,51 +1,77 @@
 .audioPlayer {
+  border-radius: 48px;
+  background: #eaf0fa;
+  width: 352px;
+  height: 48px;
   display: flex;
   align-items: center;
-  gap: 10px;
-  background: #f2f5fa;
-  border-radius: 30px;
-  padding: 10px 15px;
-  border: 2px solid #4a90e2;
+  padding: 12px 19px;
+  position: absolute;
+  top: 9px;
+  right: 40px;
+  z-index: 5;
+  font-size: 15px;
+  font-weight: 400;
+  line-height: 145%;
 }
 
-.time {
-  font-size: 14px;
-  font-weight: bold;
-  color: #111;
+.timeDisplay {
+  width: 40px;
+  text-align: end;
 }
-
 .playButton {
-  background: white;
-  border: none;
+  width: 24px;
+  height: 24px;
   border-radius: 50%;
-  width: 30px;
-  height: 30px;
-  font-size: 16px;
+  background-color: #fff;
+  border: none;
   cursor: pointer;
-  color: blue;
+  color: #002cfb;
+  margin-left: 12px;
+
+  &:disabled {
+    background-color: transparent;
+    color: rgba(173, 191, 223, 1);
+  }
 }
 
-.progressBar {
-  flex: 1;
-  height: 6px;
-  background: #d0d5e2;
-  border-radius: 3px;
+.progressBarContainer {
+  width: 163px;
+  height: 4px;
+  background: #adbfdf;
+  border-radius: 50px;
+  margin: 0 15px 0 8px;
+  cursor: pointer;
   position: relative;
 }
 
-.progress {
-  height: 6px;
-  background: #8395ff;
-  border-radius: 3px;
-  position: absolute;
-  left: 0;
-  top: 0;
+.progressBar {
+  height: 100%;
+  background: #007bff;
+  transition: width 0.2s;
 }
 
-.downloadButton {
-  font-size: 16px;
-  color: #8395ff;
-  background: none;
+.loadButton {
+  color: rgba(173, 191, 223, 1);
   border: none;
   cursor: pointer;
+  background-color: transparent;
+  width: 13px;
+  height: 16px;
+  &:hover {
+    color: #002cfb;
+  }
+}
+
+.closeButton {
+  color: rgba(173, 191, 223, 1);
+  border: none;
+  cursor: pointer;
+  background-color: transparent;
+  width: 13px;
+  height: 16px;
+  margin-left: auto;
+  &:hover {
+    color: #002cfb;
+  }
 }

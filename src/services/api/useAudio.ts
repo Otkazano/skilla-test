@@ -13,21 +13,20 @@ export const useAudio = (
 
   const fetchAudio = async (): Promise<string | null> => {
     try {
-      const response = await fetch('https://api.skilla.ru/mango/getRecord', {
+      const url = `https://api.skilla.ru/mango/getRecord?record=${record}&partnership_id=${partnershipId}`;
+      const response = await fetch(url, {
         method: 'POST',
         headers: {
           Authorization: `Bearer ${process.env.REACT_APP_API_TOKEN}`,
-          'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ record, partnership_id: partnershipId }),
       });
 
       if (!response.ok) throw new Error('Ошибка загрузки аудио');
 
       const blob = await response.blob();
-      const url = URL.createObjectURL(blob);
-      setAudioUrl(url);
-      return url;
+      const objectUrl = URL.createObjectURL(blob);
+      setAudioUrl(objectUrl);
+      return objectUrl;
     } catch (error) {
       console.error('Ошибка загрузки аудио:', error);
       return null;

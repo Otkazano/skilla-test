@@ -1,60 +1,80 @@
-import React, { useRef, useState, useEffect } from 'react';
+import React from 'react';
 import styles from './AudioPlayer.module.scss';
 import { useAudio } from '../../services/api/useAudio';
+import { ReactComponent as DownloadButton } from '../../assets/icons/player/download-button.svg';
+import { ReactComponent as PlayButton } from '../../assets/icons/player/play-button.svg';
+import { ReactComponent as PauseButton } from '../../assets/icons/player/pause-button.svg';
+import { ReactComponent as CloseButton } from '../../assets/icons/player/close-button.svg';
+import { useAudioPlayer } from '../../services/hooks/useAudioPlayer';
 
 interface AudioPlayerProps {
   record: string;
   partnershipId: string;
+  onOpen: () => void;
+  onClose: () => void;
 }
 
-const AudioPlayer: React.FC<AudioPlayerProps> = ({ record, partnershipId }) => {
-  const [audioUrl, setAudioUrl] = useState<string | null>(null);
-  const { audioUrl: fetchedUrl, fetchAudio } = useAudio(record, partnershipId);
-  const audioRef = useRef<HTMLAudioElement | null>(null);
-  const [isPlaying, setIsPlaying] = useState(false);
-
-  useEffect(() => {
-    if (!fetchedUrl) {
-      fetchAudio().then((url) => setAudioUrl(url));
-    } else {
-      setAudioUrl(fetchedUrl);
-    }
-  }, [fetchedUrl, fetchAudio]);
-
-  const togglePlay = () => {
-    if (!audioRef.current) return;
-    if (isPlaying) {
-      audioRef.current.pause();
-    } else {
-      audioRef.current.play();
-    }
-    setIsPlaying(!isPlaying);
-  };
+const AudioPlayer: React.FC<AudioPlayerProps> = ({
+  record,
+  partnershipId,
+  onOpen,
+  onClose,
+}) => {
+  const { audioUrl, fetchAudio } = useAudio(record, partnershipId);
+  const {
+    audioRef,
+    isPlaying,
+    progress,
+    currentTime,
+    duration,
+    togglePlay,
+    handleProgressClick,
+    formatTime,
+  } = useAudioPlayer();
 
   return (
     <div className={styles.audioPlayer}>
-      <span className={styles.time}>12:08</span>
-      <button className={styles.playButton} onClick={togglePlay}>
-        {isPlaying ? '❚❚' : '▶️'}
-      </button>
-      <div className={styles.progressBar}>
-        <div className={styles.progress}></div>
-      </div>
+      <div className={styles.timeDisplay}>{formatTime(currentTime)}</div>
+
       <button
-        className={styles.downloadButton}
         onClick={() => {
-          if (!audioUrl) return;
-          const a = document.createElement('a');
-          a.href = audioUrl;
-          a.download = 'call_record.mp3';
-          document.body.appendChild(a);
-          a.click();
-          document.body.removeChild(a);
+          if (!audioUrl) {
+            onOpen();
+          } else {
+            onOpen();
+            togglePlay();
+          }
         }}
+        className={styles.playButton}
+        disabled={!audioUrl}
       >
-        ⬇️
+        {isPlaying ? <PauseButton /> : <PlayButton />}
       </button>
-      <audio ref={audioRef} src={audioUrl || ''} />
+
+      <div
+        className={styles.progressBarContainer}
+        onClick={handleProgressClick}
+      >
+        <div className={styles.progressBar} style={{ width: `${progress}%` }} />
+      </div>
+
+      {!audioUrl ? (
+        <button
+          onClick={() => {
+            onOpen();
+            fetchAudio();
+          }}
+          className={styles.loadButton}
+        >
+          <DownloadButton />
+        </button>
+      ) : (
+        <audio ref={audioRef} src={audioUrl} />
+      )}
+
+      <button onClick={onClose} className={styles.closeButton}>
+        <CloseButton />
+      </button>
     </div>
   );
 };
